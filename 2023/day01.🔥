@@ -55,27 +55,36 @@ fn main() raises:
     var count = 0
     for i in range(len(lines)):
         let line = lines[i]
-        var first = 0
-        var last = 0
-        for j in range(len(line)):
-            let c = line[j]
-            try:
-                let x = atol(c)
-                first = x
-                break
-            except:
-                pass
-        for j in range(len(line) - 1, -1, -1):
-            let c = line[j]
-            try:
-                let x = atol(c)
-                last = x
-                break
-            except:
-                pass
-        let x = first * 10 + last
+        let x = combine_first_and_last_digit(line)
         count += x
     print(count)
+
+
+fn combine_first_and_last_digit(s: String) -> Int:
+    let first = find_first_digit(s)
+    let last = find_last_digit(s)
+    return first * 10 + last
+
+
+fn find_first_digit(s: String) -> Int:
+    for i in range(len(s)):
+        let c = s[i]
+        try:
+            return atol(c)
+        except:
+            pass
+    return 0
+
+
+fn find_last_digit(s: String) -> Int:
+    let reverse = range(len(s) - 1, -1, -1)
+    for i in reverse:
+        let c = s[i]
+        try:
+            return atol(c)
+        except:
+            pass
+    return 0
 
 
 fn read_lines(path: String) raises -> DynamicVector[String]:
