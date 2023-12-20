@@ -1,12 +1,16 @@
 {
 	"name": "Ubuntu",
 	"build": {
-		"dockerfile": "Dockerfile"
+		"dockerfile": "Dockerfile",
+		"args": {
+			"MODULAR_AUTH_TOKEN": "${localEnv:MODULAR_AUTH_TOKEN}"
+		}
 	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-python.python"
+				"ms-python.python",
+				"modular-mojotools.vscode-mojo"
 			]
 		}
 	}
