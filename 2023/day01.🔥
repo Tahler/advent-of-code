@@ -47,5 +47,39 @@
 # Consider your entire calibration document. What is the sum of all of the
 # calibration values?
 
-fn main():
-  print("Hello, world!")
+from collections.vector import DynamicVector
+
+
+fn main() raises:
+    let lines = read_lines("./2023/day01.txt")
+    var count = 0
+    for i in range(len(lines)):
+        let line = lines[i]
+        var first = 0
+        var last = 0
+        for j in range(len(line)):
+            let c = line[j]
+            try:
+                let x = atol(c)
+                first = x
+                break
+            except:
+                pass
+        for j in range(len(line) - 1, -1, -1):
+            let c = line[j]
+            try:
+                let x = atol(c)
+                last = x
+                break
+            except:
+                pass
+        let x = first * 10 + last
+        count += x
+    print(count)
+
+
+fn read_lines(path: String) raises -> DynamicVector[String]:
+    with open(path, "r") as f:
+        let content = f.read()
+        let lines = content.split("\n")
+        return lines
