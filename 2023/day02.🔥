@@ -55,5 +55,92 @@
 # IDs of those games?
 
 
-fn main():
-    print("Hello, day 2")
+from collections.vector import DynamicVector
+
+
+fn main() raises:
+    let lines = read_lines("./2023/day02.txt")
+    var count = 0
+    for i in range(len(lines)):
+        let line = lines[i]
+        count += id_or_0(line, red_limit=12, blue_limit=13, green_limit=14)
+    print(count)
+
+
+fn id_or_0(
+    line: String, red_limit: Int, blue_limit: Int, green_limit: Int
+) raises -> Int:
+    """Returns the game ID if the cube subsets are possible, otherwise 0.
+
+    line ≊ "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green".
+    """
+    let colon_separated = line.split(": ")
+    let game_label = colon_separated[0]
+    let subsets = colon_separated[1]
+    if not subsets_are_possible(subsets, red_limit, blue_limit, green_limit):
+        return 0
+    return parse_game_id(game_label)
+
+
+fn subsets_are_possible(
+    subsets: String, red_limit: Int, blue_limit: Int, green_limit: Int
+) raises -> Bool:
+    """Returns whether the cube subsets are possible.
+
+    subsets ≊ "3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green".
+    """
+    let semicolon_separated = subsets.split("; ")
+    for i in range(len(semicolon_separated)):
+        let subset = semicolon_separated[i]
+        if not subset_is_possible(subset, red_limit, blue_limit, green_limit):
+            return False
+    return True
+
+
+fn subset_is_possible(
+    subset: String, red_limit: Int, blue_limit: Int, green_limit: Int
+) raises -> Bool:
+    """Returns whether the cube subset it possible.
+
+    subset ≊ "3 blue, 4 red".
+    """
+    let comma_separated = subset.split(", ")
+    for i in range(len(subset)):
+        let cube_label = comma_separated[i]
+        if not cube_count_is_possible(cube_label, red_limit, blue_limit, green_limit):
+            return False
+    return True
+
+
+fn cube_count_is_possible(
+    cube_label: String, red_limit: Int, blue_limit: Int, green_limit: Int
+) raises -> Bool:
+    """Returns whether the cube count is possible.
+
+    cube_label ≊ "3 blue".
+    """
+    let space_separated = cube_label.split(" ")
+    let raw_count = space_separated[0]
+    let color = space_separated[1]
+    let count = atol(raw_count)
+    if color == "red" and count > 12:
+        return False
+    if color == "blue" and count > 13:
+        return False
+    if color == "green" and count > 14:
+        return False
+    return True
+
+
+fn parse_game_id(game_label: String) raises -> Int:
+    let space_separated = game_label.split(" ")
+    let raw_game_id = game_label[1]
+    let game_id = atol(raw_game_id)
+    return game_id
+
+
+fn read_lines(path: String) raises -> DynamicVector[String]:
+    with open(path, "r") as f:
+        let content = f.read()
+        let lines = content.split("\n")
+        return lines
