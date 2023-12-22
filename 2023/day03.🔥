@@ -47,6 +47,47 @@
 # Of course, the actual engine schematic is much larger. What is the sum of all
 # of the part numbers in the engine schematic?
 
+# Ideas:
+#
+# 1. look around number
+# ```
+# for each character
+#   if digit
+#     start number parsing to collect into one while looking for nearby symbols
+#     if there was a symbol
+#       add to count
+# ```
+#
+# 2. look around symbol
+# ```
+# for each character
+#   if symbol
+#     look for neighboring digits and parse outwards, storing first digit's
+#     position in a set so we know duplicates
+# ```
+#
+# 3. multiple passes
+# ```
+# perform multiple passes
+# first pass: collapse digits into a number and track if next to symbol
+# second pass: sum those numbers which were next to symbol
+# ```
+#
+# 4. one pass with a state machine
+# ```
+# compare against previous line as you go
+# collapse digits into a number
+#
+# on '.'->digit, check top left and top for symbol
+# on digit or digit->'.', check top for symbol
+# if symbol found or on digit->symbol, add to count and first index to set
+#
+# on symbol, check top left, top, top right for digit
+#   if digit found, add to count and first index to set
+# ```
+#
+# In all of the above, could pad the grid with '.' to facilitate lookups
+
 
 fn main():
     print("Hello, day 3")
