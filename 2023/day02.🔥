@@ -105,7 +105,7 @@ fn subset_is_possible(
     subset ≊ "3 blue, 4 red".
     """
     let comma_separated = subset.split(", ")
-    for i in range(len(subset)):
+    for i in range(len(comma_separated)):
         let cube_label = comma_separated[i]
         if not cube_count_is_possible(cube_label, red_limit, blue_limit, green_limit):
             return False
@@ -134,7 +134,7 @@ fn cube_count_is_possible(
 
 fn parse_game_id(game_label: String) raises -> Int:
     let space_separated = game_label.split(" ")
-    let raw_game_id = game_label[1]
+    let raw_game_id = space_separated[1]
     let game_id = atol(raw_game_id)
     return game_id
 
