@@ -87,7 +87,132 @@
 # ```
 #
 # In all of the above, could pad the grid with '.' to facilitate lookups
+#
+# I'll go with #1 -- seems easiest to implement.
 
 
-fn main():
-    print("Hello, day 3")
+fn main() raises:
+    let grid = read_grid("2023/day03.txt")
+    let padded = PaddedGrid(grid, ".")
+    let indexes = padded.indexes()
+
+    var sum_part_numbers = 0
+    # I wish Mojo 🔥 understood that `var` now and `+=` later means that this is
+    # a `String`, not a `StringLiteral`.
+    var raw_number: String = ""
+    var raw_number_is_adjacent_to_symbol = False
+    for i in range(len(indexes)):
+        let index = indexes[i]
+        let cell = padded[index]
+        if is_digit(cell):
+            raw_number += cell
+            # This redundantly checks the same cells multiple times, which could
+            # be improved a bit by only checking the left if we haven't seen a
+            # number yet.
+            if not raw_number_is_adjacent_to_symbol and padded.has_adjacent_symbol(
+                index
+            ):
+                raw_number_is_adjacent_to_symbol = True
+            continue
+        let passed_number = raw_number != ""
+        if passed_number:
+            if raw_number_is_adjacent_to_symbol:
+                let part_number = atol(raw_number)
+                sum_part_numbers += part_number
+            raw_number = ""
+            raw_number_is_adjacent_to_symbol = False
+    print(sum_part_numbers)
+
+
+alias Point = Tuple[Int, Int]
+
+
+struct PaddedGrid:
+    var grid: Grid
+    var pad: String
+
+    fn __init__(inout self, grid: Grid, pad: String):
+        self.grid = grid
+        self.pad = pad
+
+    fn __getitem__(self, index: Point) -> String:
+        let row_i = index.get[0, Int]()
+        let col_i = index.get[1, Int]()
+        let rows = self.grid
+        if row_i < 0 or row_i >= len(rows):
+            return self.pad
+        let row = rows[row_i]
+        if col_i < 0 or col_i >= len(row):
+            return self.pad
+        return row[col_i]
+
+    fn indexes(self) -> DynamicVector[Point]:
+        var points = DynamicVector[Point]()
+        let rows = self.grid
+        for row_i in range(len(rows)):
+            let row = rows[row_i]
+            for col_i in range(len(row)):
+                points.append((row_i, col_i))
+        return points
+
+    fn has_adjacent_symbol(self, index: Point) -> Bool:
+        let row_i = index.get[0, Int]()
+        let col_i = index.get[1, Int]()
+
+        let top_left = self[(row_i - 1, col_i - 1)]
+        let top = self[(row_i - 1, col_i)]
+        let top_right = self[(row_i - 1, col_i + 1)]
+        let left = self[(row_i, col_i - 1)]
+        let right = self[(row_i, col_i + 1)]
+        let bottom_left = self[(row_i + 1, col_i - 1)]
+        let bottom = self[(row_i + 1, col_i)]
+        let bottom_right = self[(row_i + 1, col_i + 1)]
+        # I wish Mojo 🔥 had more native __iter__ implementations.
+        return (
+            is_symbol(top_left)
+            or is_symbol(top)
+            or is_symbol(top_right)
+            or is_symbol(left)
+            or is_symbol(right)
+            or is_symbol(bottom_left)
+            or is_symbol(bottom)
+            or is_symbol(bottom_right)
+        )
+
+
+alias Row = DynamicVector[String]
+alias Grid = DynamicVector[Row]
+
+
+fn read_grid(path: String) raises -> Grid:
+    """Parses the 2D grid from the given file, replacing symbols with '*'."""
+    with open(path, "r") as f:
+        let content = f.read()
+        let lines = content.split("\n")
+
+        var grid = Grid()
+        if len(lines) == 0:
+            return Grid()
+
+        for i in range(len(lines)):
+            let line = lines[i]
+
+            var row = Row()
+            for j in range(len(line)):
+                let c = line[j]
+                row.append(c)
+            grid.append(row)
+
+        return grid
+
+
+fn is_symbol(s: String) -> Bool:
+    return not (is_digit(s) or s == ".")
+
+
+fn is_digit(s: String) -> Bool:
+    try:
+        _ = atol(s)
+        return True
+    except:
+        return False
