@@ -1,0 +1,13 @@
+import testing
+
+from .hash_map import HashMap
+
+
+fn test_hash_map_insert():
+    let map = HashMap[Int, Int]()
+    map[1] = 2
+    testing.assert_equal(map[1], 2)
+
+
+fn main():
+    test_hash_map_insert()

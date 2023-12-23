@@ -1,0 +1,68 @@
+trait HashableCollectionElement(Hashable, CollectionElement):
+    pass
+
+
+# Idea is to allow hash collisions, use Bucket to store multiple key-value
+# pairs. When a hash collision occurs on __get_item__, it compares takes the
+# key-value pair with the same key. The values vector is only resized when a
+# bucket's capacity is exceeded.
+struct HashMap[K: HashableCollectionElement, V: CollectionElement]:
+    var buckets: DynamicVector[Bucket[K, V]]
+    var bucket_capacity: Int
+
+    fn __init__(inout self):
+        self.buckets = DynamicVector[Bucket[K, V]](capacity=100)
+        self.bucket_capacity = 3
+
+    fn _index(self, key: K) -> Int:
+        let hash = hash(key)
+        let index = hash % self.buckets.capacity
+        return index
+
+    fn __getitem__(self, key: K) -> V:
+        let index = self._index(key)
+        let bucket = self.buckets[index]
+        return bucket.get(key)
+
+    fn __setitem__(inout self, key: K, value: V):
+        let index = self._index(key)
+        let bucket = self.buckets[index]
+        if len(bucket) == self.bucket_capacity:
+            # TODO: Resize self.buckets.
+            pass
+        bucket.put(key, value)
+
+
+@value
+struct Bucket[K: HashableCollectionElement, V: CollectionElement]:
+    # This has a type error: `'DynamicVector' parameter #0 has
+    # 'CollectionElement' type, but value has type 'KeyValuePair[K, V]'`.
+    #
+    # `CollectionElement` requires `__copy_init__` and `__move_init__`:
+    # https://docs.modular.com/mojo/manual/traits.html#generic-structs-with-traits:~:text=To%20store%20a%20struct%20in%20a%20DynamicVector%2C%20the%20struct%20needs%20to%20conform%20to%20the%20CollectionElement%20trait%2C%20which%20requires%20a%20copy%20constructor%20and%20a%20move%20constructor.
+    #
+    # But `@`value is supposed to implement `__copy_init__` and `__move_init__`:
+    # https://docs.modular.com/mojo/manual/decorators/value.html
+    #
+    # Maybe trait polymorphism is not supported yet?
+    var values: DynamicVector[KeyValuePair[K, V]]
+
+    fn __len__(self) -> Int:
+        return len(self.values)
+
+    fn put(self, key: K, value: V):
+        let pair = KeyValuePair[K, V](key=key, value=value)
+        self.values.append(pair)
+
+    fn get(self, key: K) -> V:
+        for i in range(len(self.values)):
+            let pair = self.values[i]
+            if pair.key == key:
+                return pair.value
+        return None
+
+
+@value
+struct KeyValuePair[K: HashableCollectionElement, V: CollectionElement]:
+    var key: K
+    var value: V
