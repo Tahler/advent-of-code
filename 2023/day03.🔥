@@ -216,8 +216,4 @@ fn is_symbol(s: String) -> Bool:
 
 
 fn is_digit(s: String) -> Bool:
-    try:
-        _ = atol(s)
-        return True
-    except:
-        return False
+    return isdigit(ord(s[0]))
