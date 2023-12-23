@@ -86,6 +86,11 @@
 #   if digit found, add to count and first index to set
 # ```
 #
+# 5. cut out non part numbers
+#
+# 6. create "overlay mask" of donuts around symbols, traverse the mask to parse
+#    numbers which intersect it
+#
 # In all of the above, could pad the grid with '.' to facilitate lookups
 #
 # I'll go with #1 -- seems easiest to implement.
