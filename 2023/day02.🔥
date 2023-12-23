@@ -65,12 +65,12 @@ fn main() raises:
         let line = lines[i]
         if line == "":
             continue
-        count += id_or_0(line, red_limit=12, blue_limit=13, green_limit=14)
+        count += id_or_0(line, red_limit=12, green_limit=13, blue_limit=14)
     print(count)
 
 
 fn id_or_0(
-    line: String, red_limit: Int, blue_limit: Int, green_limit: Int
+    line: String, red_limit: Int, green_limit: Int, blue_limit: Int
 ) raises -> Int:
     """Returns the game ID if the cube subsets are possible, otherwise 0.
 
@@ -79,13 +79,13 @@ fn id_or_0(
     let colon_separated = line.split(": ")
     let game_label = colon_separated[0]
     let subsets = colon_separated[1]
-    if not subsets_are_possible(subsets, red_limit, blue_limit, green_limit):
+    if not subsets_are_possible(subsets, red_limit, green_limit, blue_limit):
         return 0
     return parse_game_id(game_label)
 
 
 fn subsets_are_possible(
-    subsets: String, red_limit: Int, blue_limit: Int, green_limit: Int
+    subsets: String, red_limit: Int, green_limit: Int, blue_limit: Int
 ) raises -> Bool:
     """Returns whether the cube subsets are possible.
 
@@ -94,13 +94,13 @@ fn subsets_are_possible(
     let semicolon_separated = subsets.split("; ")
     for i in range(len(semicolon_separated)):
         let subset = semicolon_separated[i]
-        if not subset_is_possible(subset, red_limit, blue_limit, green_limit):
+        if not subset_is_possible(subset, red_limit, green_limit, blue_limit):
             return False
     return True
 
 
 fn subset_is_possible(
-    subset: String, red_limit: Int, blue_limit: Int, green_limit: Int
+    subset: String, red_limit: Int, green_limit: Int, blue_limit: Int
 ) raises -> Bool:
     """Returns whether the cube subset it possible.
 
@@ -109,13 +109,13 @@ fn subset_is_possible(
     let comma_separated = subset.split(", ")
     for i in range(len(comma_separated)):
         let cube_label = comma_separated[i]
-        if not cube_count_is_possible(cube_label, red_limit, blue_limit, green_limit):
+        if not cube_count_is_possible(cube_label, red_limit, green_limit, blue_limit):
             return False
     return True
 
 
 fn cube_count_is_possible(
-    cube_label: String, red_limit: Int, blue_limit: Int, green_limit: Int
+    cube_label: String, red_limit: Int, green_limit: Int, blue_limit: Int
 ) raises -> Bool:
     """Returns whether the cube count is possible.
 
@@ -125,11 +125,11 @@ fn cube_count_is_possible(
     let raw_count = space_separated[0]
     let color = space_separated[1]
     let count = atol(raw_count)
-    if color == "red" and count > 12:
+    if color == "red" and count > red_limit:
         return False
-    if color == "blue" and count > 13:
+    if color == "green" and count > green_limit:
         return False
-    if color == "green" and count > 14:
+    if color == "blue" and count > blue_limit:
         return False
     return True
 
