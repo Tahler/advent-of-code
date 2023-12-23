@@ -63,6 +63,8 @@ fn main() raises:
     var count = 0
     for i in range(len(lines)):
         let line = lines[i]
+        if line == "":
+            continue
         count += id_or_0(line, red_limit=12, blue_limit=13, green_limit=14)
     print(count)
 
